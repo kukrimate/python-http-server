@@ -4,31 +4,6 @@ import sys
 import socket
 from myhttp import *
 
-def http_parse_req(msg):
-	"""
-	(Not so) standard compliant HTTP request parser, works fine for the
-	subset we care about
-	"""
-
-	# Request object
-	request = lambda: None
-
-	# Split requst into lines
-	lines = msg.split(b"\r\n")
-
-	# Parse request line
-	request.method, request.path, request.version = lines[0].split(b" ")
-
-	# Parse headers
-	request.headers = {}
-	for hdr in lines[1:]:
-		if len(hdr) == 0:
-			break
-		nam, val = hdr.split(b":", 1)
-		request.headers[nam.lower()] = val.lstrip()
-
-	return request
-
 # Helper functions for sending HTTP responses
 def http_200(conn, data):
 	conn.send(b"HTTP/1.0 200 OK\r\n")

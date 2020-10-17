@@ -41,3 +41,53 @@ def http_read(conn):
 
 	return bytes(msg)
 
+def http_parse_req(msg):
+	"""
+	(Not so) standard compliant HTTP request parser, works fine for the
+	subset we care about
+	"""
+
+	# Request object
+	request = lambda: None
+
+	# Split request into lines
+	lines = msg.split(b"\r\n")
+
+	# Parse request line
+	request.method, request.path, request.version = \
+		lines[0].split(b" ", 2)
+
+	# Parse headers
+	request.headers = {}
+	for hdr in lines[1:]:
+		if len(hdr) == 0:
+			break
+		nam, val = hdr.split(b":", 1)
+		request.headers[nam.lower()] = val.lstrip()
+
+	return request
+
+def http_parse_resp(msg):
+	"""
+	Same as the above, except it parses HTTP responses instead
+	"""
+
+	# Response object
+	response = lambda: None
+
+	# Split response into lines
+	lines = msg.split(b"\r\n")
+
+	# Parse status line
+	response.version, response.status, response.reason = \
+		lines[0].split(b" ", 2)
+
+	# Parse headers
+	response.headers = {}
+	for hdr in lines[1:]:
+		if len(hdr) == 0:
+			break
+		nam, val = hdr.split(b":", 1)
+		response.headers[nam.lower()] = val.lstrip()
+
+	return response
