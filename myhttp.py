@@ -24,7 +24,7 @@ def urldecode(s):
 	dec = b""     # Decoded string
 
 	while len(chs) > 0:
-		ch = chs.pop(0)
+		ch = bytes([chs.pop(0)])
 		if ch == b"%":
 			if len(ch) == 0:
 				raise ValueError()
@@ -34,7 +34,7 @@ def urldecode(s):
 			n += bytes([chs.pop(0)])
 			dec += bytes([int(n, 16)])
 		else:
-			dec += bytes([ch])
+			dec += ch
 
 	return dec
 
