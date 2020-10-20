@@ -124,5 +124,8 @@ def main():
 	# Close socket
 	conn.close()
 
+	# If we reach this the command was successful
+	print("Request completed successfully!")
+
 if __name__ == "__main__":
 	main()
