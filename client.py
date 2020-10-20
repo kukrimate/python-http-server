@@ -5,7 +5,7 @@ import socket
 from myhttp import *
 
 def http_request(conn, method, path, data):
-	conn.send(b"%s %s HTTP/1.0\r\n" %(method, path))
+	conn.send(b"%s %s HTTP/1.0\r\n" %(method, urlencode(path)))
 	if len(data) > 0:
 		conn.send(b"Content-Length: %d\r\n" %len(data))
 	conn.send(b"\r\n")

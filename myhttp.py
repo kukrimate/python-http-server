@@ -1,6 +1,42 @@
 #
-# The worst Python HTTP library in existance
+# Helper functions for HTTP
 #
+
+def urlencode(s):
+	"""
+	Perform standard URL encoding per RFC 1738
+	"""
+	rsvd = b"<>#%\"{}|\\^[]`"
+	buf = b""
+	for ch in s:
+		if ch <= 0x20 or ch in rsvd:
+			buf += b"%%%02x" %ch
+		else:
+			buf += bytes([ch])
+	return buf
+
+def urldecode(s):
+	"""
+	Decode a URL encoded string
+	"""
+
+	chs = list(s) # Character stack
+	dec = b""     # Decoded string
+
+	while len(chs) > 0:
+		ch = chs.pop(0)
+		if ch == b"%":
+			if len(ch) == 0:
+				raise ValueError()
+			n = bytes([chs.pop(0)])
+			if len(ch) == 0:
+				raise ValueError()
+			n += bytes([chs.pop(0)])
+			dec += bytes([int(n, 16)])
+		else:
+			dec += bytes([ch])
+
+	return dec
 
 def http_read(conn):
 	"""
@@ -56,6 +92,9 @@ def http_parse_req(msg):
 	# Parse request line
 	request.method, request.path, request.version = \
 		lines[0].split(b" ", 2)
+
+	# Run the path through the URL decoder
+	request.path = urldecode(request.path)
 
 	# Parse headers
 	request.headers = {}
