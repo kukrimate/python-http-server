@@ -13,7 +13,7 @@ def http_request(conn, method, path, data):
 
 def http_get_content(conn, resp):
 	clen = int(resp.headers[b"content-length"])
-	return conn.recv(clen)
+	return recieve_max(conn, clen)
 
 def cmd_list(conn):
 	# Send GET /

@@ -45,7 +45,7 @@ def http_put(conn, req):
 		http_403(conn, b"Sorry, no overwrites allowed\n")
 		return
 
-	data = conn.recv(filesize)
+	data = recieve_max(conn, filesize)
 	with open(filepath, "wb") as file:
 		file.write(data)
 

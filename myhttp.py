@@ -130,3 +130,15 @@ def http_parse_resp(msg):
 		response.headers[nam.lower()] = val.lstrip()
 
 	return response
+
+def recieve_max(sock, clen):
+	"""
+	Recieve a maximum of clen max bytes from a socket
+	"""
+	data = b""
+	while clen > len(data):
+		recieved = sock.recv(clen - len(data))
+		if len(recieved) == 0:
+			break
+		data += recieved
+	return data
