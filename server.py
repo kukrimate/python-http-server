@@ -31,6 +31,9 @@ def http_get(conn, req):
 		http_200(conn, listing.encode())
 	else:		     # User wants file
 		filepath = "." + req.path.decode()
+		if "/" in filepath:
+			http_403(conn, b"No path traversal today :)\n")
+			return
 		if os.path.isfile(filepath):
 			with open(filepath, "rb") as file:
 				http_200(conn, file.read())
@@ -40,6 +43,10 @@ def http_get(conn, req):
 def http_put(conn, req):
 	filepath = "." + req.path.decode()
 	filesize = int(req.headers[b"content-length"])
+
+	if "/" in filepath:
+		http_403(conn, b"No path traversal today :)")
+		return
 
 	if os.path.exists(filepath):
 		http_403(conn, b"Sorry, no overwrites allowed\n")
