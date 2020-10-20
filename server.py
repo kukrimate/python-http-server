@@ -26,14 +26,21 @@ def http_404(conn, data):
 	conn.send(data)
 
 def http_get(conn, req):
+	print("GET %s" %req.path.decode())
+
 	if req.path == b"/": # User wants dir listing
 		listing = "\n".join(os.listdir()) + "\n"
 		http_200(conn, listing.encode())
 	else:		     # User wants file
-		filepath = "." + req.path.decode()
+		filepath = req.path.decode()
+
+		if filepath[0] == "/": # Remove leading /
+			filepath = filepath[1:]
+
 		if "/" in filepath:
 			http_403(conn, b"No path traversal today :)\n")
 			return
+
 		if os.path.isfile(filepath):
 			with open(filepath, "rb") as file:
 				http_200(conn, file.read())
@@ -41,12 +48,18 @@ def http_get(conn, req):
 			http_404(conn, b"File not found\n")
 
 def http_put(conn, req):
-	filepath = "." + req.path.decode()
+	print("PUT %s" %req.path.decode())
+
+	filepath = req.path.decode()
 	filesize = int(req.headers[b"content-length"])
+
+	if filepath[0] == "/": # Remove leading /
+		filepath = filepath[1:]
 
 	if "/" in filepath:
 		http_403(conn, b"No path traversal today :)")
 		return
+
 
 	if os.path.exists(filepath):
 		http_403(conn, b"Sorry, no overwrites allowed\n")

@@ -4,12 +4,13 @@ import sys
 import socket
 from myhttp import *
 
-def http_request(conn, method, path, data):
+def http_request(conn, method, path, data=None):
 	conn.send(b"%s %s HTTP/1.0\r\n" %(method, urlencode(path)))
-	if len(data) > 0:
+	if data != None:
 		conn.send(b"Content-Length: %d\r\n" %len(data))
 	conn.send(b"\r\n")
-	conn.send(data)
+	if data != None:
+		conn.send(data)
 
 def http_get_content(conn, resp):
 	clen = int(resp.headers[b"content-length"])
@@ -17,7 +18,7 @@ def http_get_content(conn, resp):
 
 def cmd_list(conn):
 	# Send GET /
-	http_request(conn, b"GET", b"/", b"")
+	http_request(conn, b"GET", b"/")
 
 	# Read response
 	response = http_parse_resp(http_read(conn))
