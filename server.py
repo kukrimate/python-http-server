@@ -93,9 +93,9 @@ def handle_connection(conn):
 		except:
 			pass
 
-def main():
+def main_with_fork():
 	"""
-	Entry point of the server
+	Entry point of the server (with fork)
 	"""
 
 	# Make sure we got enough arguments
@@ -152,5 +152,51 @@ def main():
 		server.close()
 		exit(0)
 
+def main_nofork():
+	"""
+	Entry point of the server (for Windows)
+	"""
+
+	# Make sure we got enough arguments
+	if len(sys.argv) < 2:
+		print("Usage: %s <port number>" %sys.argv[0], file=sys.stderr)
+		exit(1)
+
+	# Validate port number
+	try:
+		port = int(sys.argv[1])
+		if port < 1 or port > 65535:
+			raise ValueError()
+	except ValueError:
+		print("Invalid port")
+		exit(1)
+
+	server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	server.bind(("", port))
+	server.listen(10)
+
+	# Catch SIGINT so we can exit cleanly
+	try:
+		while True:
+			conn, addr = server.accept()
+
+			# Print client address
+			print("Connection from: %s" %str(addr))
+
+			# Handle the connection
+			handle_connection(conn)
+
+			# Close the file descriptor
+			conn.close()
+
+	except KeyboardInterrupt:
+		# Close the server socket and exit
+		server.close()
+		exit(0)
+
 if __name__ == "__main__":
-	main()
+	if hasattr(os, "fork"):
+		main_with_fork()
+	else: # Forkless version for M$ Windows and other non-unix OSes
+		main_nofork()
