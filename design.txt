@@ -1,3 +1,7 @@
-Say no to custom protocols, I ended up implementing a standard-ish HTTP/1.0
-server/client with one method PUT pulled in from HTTP/1.1 to allow for one
-of the required commands. Directory listings are implemented by GET-ing /.
+I ended up implementing a standard-ish HTTP/1.0 server/client with one method
+PUT pulled in from HTTP/1.1 to allow for one of the required commands.
+Directory listings are implemented by GET-ing /.
+
+Please note that this program mainly targets Unix-like operating systems with
+fork. There is a basic workaround implemented to allow Windows to work, but it
+kills performance as everything becomes single-threaded.
